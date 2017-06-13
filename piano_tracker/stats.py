@@ -28,18 +28,21 @@ class Stats(object):
                 self._listeners[message_type].append(metric)
 
     def push(self, midi_msg):
+        """ entry-point for incoming messages """
         with self._lock:
-            self.push_to_listeners(midi_msg.type, midi_msg)
-            self.push_to_listeners('*', midi_msg)
+            self._push_to_listeners(midi_msg.type, midi_msg)
+            self._push_to_listeners('*', midi_msg)
 
-    def push_to_listeners(self, listened_to, midi_msg):
+    def _push_to_listeners(self, listened_to, midi_msg):
         if listened_to in self._listeners:
             for l in self._listeners[listened_to]:
                 l.push(midi_msg)
 
     def stats(self):
+        """ stats displayed repeatedly during the session """
         with self._lock:
             return {m.name:m.format() for m in self._metrics}
 
     def final_stats(self):
+        """ summary stats displayed at the end of the session """
         return self.stats() # TODO
