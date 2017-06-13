@@ -29,6 +29,10 @@ class Stats:
                 'npm': (self._notes / minutes)
             }
 
+    def final_stats(self):
+        with self._lock:
+            return 'total playing time %s, %i notes' % (self._format_duration(self._duration()), self._notes)
+
     def _duration(self):
         now = time.time()
         return now - self._started_at
