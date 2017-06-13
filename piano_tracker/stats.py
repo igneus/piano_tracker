@@ -1,42 +1,45 @@
 import time
 import threading
 
-class Stats:
+import pinject
+
+from metrics import *
+
+class Stats(object):
     """ thread-safe message aggregator """
 
     def __init__(self):
         self._lock = threading.Lock()
-        self._messages = 0
-        self._notes = 0
-        self._started_at = time.time()
+
+        metric_classes = [
+            TotalDuration,
+            MessageCount,
+            NoteCount,
+            NotesPerMinute,
+        ]
+        obj_graph = pinject.new_object_graph()
+        self._metrics = map(lambda x: obj_graph.provide(x), metric_classes)
+
+        self._listeners = {}
+        for metric in self._metrics:
+            for message_type in metric.subscribe_to:
+                if message_type not in self._listeners:
+                    self._listeners[message_type] = []
+                self._listeners[message_type].append(metric)
 
     def push(self, midi_msg):
         with self._lock:
-            self._messages += 1
+            self.push_to_listeners(midi_msg.type, midi_msg)
+            self.push_to_listeners('*', midi_msg)
 
-            if midi_msg.type == 'note_on':
-                self._notes += 1
+    def push_to_listeners(self, listened_to, midi_msg):
+        if listened_to in self._listeners:
+            for l in self._listeners[listened_to]:
+                l.push(midi_msg)
 
     def stats(self):
         with self._lock:
-            duration = self._duration()
-            minutes = duration / 60
-
-            return {
-                'messages': self._messages,
-                'notes': self._notes,
-                'time': self._format_duration(duration),
-                'npm': (self._notes / minutes)
-            }
+            return {m.name:m.format() for m in self._metrics}
 
     def final_stats(self):
-        with self._lock:
-            return 'total playing time %s, %i notes' % (self._format_duration(self._duration()), self._notes)
-
-    def _duration(self):
-        now = time.time()
-        return now - self._started_at
-
-    def _format_duration(self, duration):
-        idur = int(duration)
-        return '%i:%i' % (idur / 60, idur % 60)
+        return self.stats() # TODO
