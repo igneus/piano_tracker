@@ -5,15 +5,24 @@ import pinject
 """
 Each metric class subscribes to zero or more message types
 and exposes a method returning the metric value.
-It can also depend on other metrics. Dependencies are resolved
-automatically by pinject.
+It can also depend on other metrics. Dependencies are autowired
+by MetricsProvider.
 """
 
 class Metric(object):
     """ Abstract class """
 
+    def value(self):
+        """ current value of the metric """
+        return None
+
     def format(self):
+        """ value formatted for displaying to the user """
         return self.value()
+
+    def push(self, message):
+        """ processes incoming messages """
+        pass
 
 class TimeFormatted(object):
     """ Mixin. Implements time formatting """
