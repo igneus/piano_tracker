@@ -41,14 +41,28 @@ class TotalDuration(TimeFormatted, Metric):
     """ Duration in seconds, as float """
 
     name = 'duration'
-    subscribe_to = []
+    subscribe_to = ['note_on', 'note_off']
 
     def __init__(self):
-        self._started_at = time.time()
+        self._started_at = None
+        self._ended_at = None
 
     def value(self):
+        if self._started_at is None:
+            return 0.0
+
+        if self._ended_at is None:
+            now = time.time();
+            return now - self._started_at
+
+        return self._ended_at - self._started_at
+
+    def push(self, message):
         now = time.time()
-        return now - self._started_at
+        if message.type == 'note_on' and self._started_at is None:
+            self._started_at = now
+        elif message.type == 'note_off':
+            self._ended_at = now
 
 class PlayingDuration(TimeFormatted, Metric):
     """ Time when some note was being played, in seconds, as float """
@@ -136,6 +150,9 @@ class NotesPerMinute(FloatFormatted, Metric):
         pass
 
     def value(self):
+        if self._duration_minutes.value() == 0.0:
+            return 0.0
+
         return self._note_count.value() / self._duration_minutes.value()
 
 class NotesPerPlayingMinute(FloatFormatted, Metric):
@@ -148,6 +165,6 @@ class NotesPerPlayingMinute(FloatFormatted, Metric):
 
     def value(self):
         if self._playing_duration_minutes.value() == 0.0:
-            return 0
+            return 0.0
 
         return self._note_count.value() / self._playing_duration_minutes.value()
