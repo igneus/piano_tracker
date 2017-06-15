@@ -17,10 +17,8 @@ class MetricsProvider(object):
 
         klass = self.name_to_class(name)
         arg_names = self.init_arg_names(klass)
-        print arg_names
         args = [self.provide(i) for i in arg_names]
 
-        print klass
         instance = klass(*args)
         self._observable.add_listener(instance, instance.subscribe_to)
         self._cache[name] = instance
