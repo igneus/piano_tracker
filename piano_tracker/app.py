@@ -17,7 +17,7 @@ def main():
         map(lambda x: x.start(), threads)
 
         while threading.active_count() > 0:
-            time.sleep(0.5)
+            time.sleep(0.1)
 
     except KeyboardInterrupt:
         terminate.set()
