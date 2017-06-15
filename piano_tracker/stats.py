@@ -1,31 +1,30 @@
 import time
 import threading
 
-import pinject
-
-from metrics import *
+from metrics_provider import MetricsProvider
 
 class Stats(object):
     """ thread-safe message aggregator """
 
     def __init__(self):
         self._lock = threading.Lock()
-
-        metric_classes = [
-            TotalDuration,
-            MessageCount,
-            NoteCount,
-            NotesPerMinute,
-        ]
-        obj_graph = pinject.new_object_graph()
-        self._metrics = map(lambda x: obj_graph.provide(x), metric_classes)
-
         self._listeners = {}
-        for metric in self._metrics:
-            for message_type in metric.subscribe_to:
-                if message_type not in self._listeners:
-                    self._listeners[message_type] = []
-                self._listeners[message_type].append(metric)
+
+        provider = MetricsProvider(observable=self)
+        metrics = [
+            'total_duration',
+            'message_count',
+            'note_count',
+            'notes_per_minute',
+        ]
+        self._metrics = map(lambda x: provider.provide(x), metrics)
+
+    def add_listener(self, listener, message_types):
+        """ registers a listener """
+        for message_type in message_types:
+            if message_type not in self._listeners:
+                self._listeners[message_type] = []
+            self._listeners[message_type].append(listener)
 
     def push(self, midi_msg):
         """ entry-point for incoming messages """
