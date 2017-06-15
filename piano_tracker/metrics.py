@@ -70,3 +70,6 @@ class NotesPerMinute(Metric):
 
     def value(self):
         return self._note_count.value() / self._duration_minutes.value()
+
+    def format(self):
+        return '%.2f' % self.value()
