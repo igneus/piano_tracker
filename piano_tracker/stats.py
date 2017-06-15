@@ -13,9 +13,11 @@ class Stats(object):
         provider = MetricsProvider(observable=self)
         metrics = [
             'total_duration',
-            'message_count',
+            'playing_duration',
+            #'message_count',
             'note_count',
             'notes_per_minute',
+            'notes_per_playing_minute',
         ]
         self._metrics = map(lambda x: provider.provide(x), metrics)
 
