@@ -1,6 +1,7 @@
 import time
 import threading
 
+import graphic
 from stats import Stats
 from threads import DisplayThread, IOThread
 
@@ -23,5 +24,8 @@ def main():
         terminate.set()
         map(lambda x: x.join(), threads)
 
+        final_stats = stats.final_stats()
         print
-        print stats.final_stats()
+        print final_stats
+
+        graphic.generate(final_stats, 'piano_tracker_graphic.png')
