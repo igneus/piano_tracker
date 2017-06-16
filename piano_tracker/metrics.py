@@ -73,7 +73,10 @@ class PlayingDuration(TimeFormatted, Metric):
     def __init__(self):
         self._buffer = 0.0
         self._started_at = None
+        self._ended_at = None
         self._notes_playing = 0
+
+        self.max_short_pause = 5 # seconds
 
     def value(self):
         now = time.time()
@@ -88,7 +91,12 @@ class PlayingDuration(TimeFormatted, Metric):
 
         if message.type == 'note_on':
             if not self._playing():
-                self._started_at = now
+                if self._ended_at is not None and (now - self._ended_at) < self.max_short_pause:
+                    # short pause - include it in playing time
+                    self._started_at = self._ended_at
+                    self._ended_at = None
+                else:
+                    self._started_at = now
             self._notes_playing += 1
         elif message.type == 'note_off':
             if self._notes_playing > 0:
@@ -96,6 +104,7 @@ class PlayingDuration(TimeFormatted, Metric):
                 if self._notes_playing == 0:
                     self._buffer += (now - self._started_at)
                     self._started_at = None
+                    self._ended_at = now
         else:
             raise TypeError('Unexpected message type %s' % message.type)
 
