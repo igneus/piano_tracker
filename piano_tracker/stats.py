@@ -21,6 +21,17 @@ class Stats(object):
         ]
         self._metrics = map(lambda x: provider.provide(x), metrics)
 
+        final_metrics = [
+            'total_duration',
+            'playing_duration',
+            'message_count',
+            'note_count',
+            'notes_per_minute',
+            'notes_per_playing_minute',
+            'note_count_per_pitch',
+        ]
+        self._final_metrics = map(lambda x: provider.provide(x), final_metrics)
+
     def add_listener(self, listener, message_types):
         """ registers a listener """
         for message_type in message_types:
@@ -46,4 +57,5 @@ class Stats(object):
 
     def final_stats(self):
         """ summary stats displayed at the end of the session """
-        return self.stats() # TODO
+        with self._lock:
+            return {m.name:m.format() for m in self._final_metrics}
