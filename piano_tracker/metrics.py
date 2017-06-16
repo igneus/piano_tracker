@@ -177,3 +177,20 @@ class NotesPerPlayingMinute(FloatFormatted, Metric):
             return 0.0
 
         return self._note_count.value() / self._playing_duration_minutes.value()
+
+class NoteCountPerPitch(Metric):
+    name = 'keys'
+    subscribe_to = ['note_on']
+
+    def __init__(self):
+        self._keys = {}
+
+    def push(self, message):
+        note = message.note
+        if note not in self._keys:
+            self._keys[note] = 1
+        else:
+            self._keys[note] += 1
+
+    def value(self):
+        return self._keys
