@@ -4,7 +4,7 @@ def generate(stats, filename):
     """ generates graphic summarizing the recorded stats """
 
     size = (640, 480)
-    bgcolour = '#fcc'
+    bgcolour = '#ccd'
     image = Image.new('RGB', size, bgcolour)
 
     draw = ImageDraw.Draw(image)
@@ -21,6 +21,11 @@ def default_colour_func(key, default):
 
 class KeyboardDraw(object):
     """ draws part of a keyboard """
+
+    # default colours
+    white = '#fff'
+    black = '#000'
+    outline = '#000'
 
     def __init__(self, key_range, max_width):
         self._min_key = key_range[0]
@@ -47,7 +52,7 @@ class KeyboardDraw(object):
         for key in xrange(self._min_key, self._max_key + 1):
             x = offset + i * w
             if not self._black_key(key):
-                draw.rectangle([x, 0, x + w, h], colour_func(key, '#fff'), '#000')
+                draw.rectangle([x, 0, x + w, h], colour_func(key, self.white), self.outline)
                 i += 1
 
         # black keys
@@ -55,7 +60,7 @@ class KeyboardDraw(object):
         for key in xrange(self._min_key, self._max_key + 1):
             x = offset + i * w
             if self._black_key(key):
-                draw.rectangle([x - w/4, 0, x + w/4, h/2], colour_func(key, '#000'), '#000')
+                draw.rectangle([x - w/4, 0, x + w/4, h/2], colour_func(key, self.black), self.outline)
             else:
                 i += 1
 
@@ -98,4 +103,4 @@ class KeyHeatmap(object):
         else:
             hue_ratio = 1.0 - (float(hits - self._min_hits) / self._hit_range)
 
-        return 'hsl(%i, 100%%, 50%%)' % (360 * hue_ratio)
+        return 'hsl(%i, 90%%, 50%%)' % (360 * hue_ratio)
