@@ -9,21 +9,7 @@ def generate(stats, filename):
 
     draw = ImageDraw.Draw(image)
 
-    hit_values = stats['keys'].values()
-    min_hits = min(hit_values)
-    max_hits = max(hit_values)
-
-    heatmap_colour = lambda hits: 'hsl(%i, 100%%, 50%%)' % (360 * (1.0 - (float(hits - min_hits) / (max_hits - min_hits))))
-
-    def colour_hit_keys(key, default):
-        lowest_key = 24
-        midi_key = key + lowest_key # zero based to MIDI numbering
-        if midi_key not in stats['keys']:
-            return default
-
-        return heatmap_colour(stats['keys'][midi_key])
-
-    draw_keyboard(draw, size[0], colour_hit_keys)
+    draw_keyboard(draw, size[0], KeyHeatmap(stats['keys']))
 
     image.save(filename)
 
@@ -34,11 +20,13 @@ def draw_keyboard(draw, width, colour_func=default_colour_func):
     w = 20
     h = 5 * w
 
+    midi_key = lambda x: x + 24
+
     # white keys
     key = 0
     for i, x in enumerate(xrange(0, width - w, w)):
         step = i % 7
-        draw.rectangle([x, 0, x + w, h], colour_func(key, '#fff'), '#000')
+        draw.rectangle([x, 0, x + w, h], colour_func(midi_key(key), '#fff'), '#000')
 
         if step == 2 or step == 6:
             key += 1
@@ -53,6 +41,37 @@ def draw_keyboard(draw, width, colour_func=default_colour_func):
             key += 1
             continue
 
-        draw.rectangle([x - w/4, 0, x + w/4, h/2], colour_func(key, '#000'), '#000')
+        draw.rectangle([x - w/4, 0, x + w/4, h/2], colour_func(midi_key(key), '#000'), '#000')
 
         key += 2
+
+class KeyHeatmap(object):
+    """
+    callable which can be used as colouring callback for draw_keyboard;
+    generates heatmap-like colours based on a dict mapping
+    key ids to hit counts
+    """
+
+    def __init__(self, key_stats):
+        self._key_stats = key_stats
+
+        hit_values = self._key_stats.values()
+        self._min_hits = min(hit_values)
+        self._max_hits = max(hit_values)
+        self._hit_range = self._max_hits - self._min_hits
+
+    def __call__(self, key, default):
+        """ colour of the given key """
+
+        if key not in self._key_stats:
+            return default
+
+        return self._heatmap_colour(self._key_stats[key])
+
+    def _heatmap_colour(self, hits):
+        if self._hit_range == 0:
+            hue_ratio = 1.0
+        else:
+            hue_ratio = 1.0 - (float(hits - self._min_hits) / self._hit_range)
+
+        return 'hsl(%i, 100%%, 50%%)' % (360 * hue_ratio)
