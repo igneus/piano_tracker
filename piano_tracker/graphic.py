@@ -34,17 +34,18 @@ class KeyboardDraw(object):
         self._max_width = max_width
 
     def __call__(self, draw, colour_func=default_colour_func):
-        width = self._max_width
-
         # white key dimensions
-        w = self._max_width / self._white_keys_in_range()
+        white_keys = self._white_keys_in_range()
+        w = self._max_width / white_keys
         w = min(w, 40)
         h = 5 * w
+
+        offset = (self._max_width - (w * white_keys)) / 2
 
         # white keys
         i = 0
         for key in xrange(self._min_key, self._max_key + 1):
-            x = i * w
+            x = offset + i * w
             if not self._black_key(key):
                 draw.rectangle([x, 0, x + w, h], colour_func(key, '#fff'), '#000')
                 i += 1
@@ -52,7 +53,7 @@ class KeyboardDraw(object):
         # black keys
         i = 0
         for key in xrange(self._min_key, self._max_key + 1):
-            x = i * w
+            x = offset + i * w
             if self._black_key(key):
                 draw.rectangle([x - w/4, 0, x + w/4, h/2], colour_func(key, '#000'), '#000')
             else:
