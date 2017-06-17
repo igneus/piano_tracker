@@ -42,7 +42,7 @@ def generate(stats, sampled_stats, filename):
 def default_colour_func(key, default):
     return default
 
-class KeyboardDraw(object):
+class KeyboardDraw:
     """ draws part of a keyboard """
 
     # default colours
@@ -72,7 +72,7 @@ class KeyboardDraw(object):
 
         # white keys
         i = 0
-        for key in xrange(self._min_key, self._max_key + 1):
+        for key in range(self._min_key, self._max_key + 1):
             x = offset + i * w
             if not self._black_key(key):
                 draw.rectangle([x, 0, x + w, h], colour_func(key, self.white), self.outline)
@@ -80,7 +80,7 @@ class KeyboardDraw(object):
 
         # black keys
         i = 0
-        for key in xrange(self._min_key, self._max_key + 1):
+        for key in range(self._min_key, self._max_key + 1):
             x = offset + i * w
             if self._black_key(key):
                 draw.rectangle([x - w/4, 0, x + w/4, h * 0.6], colour_func(key, self.black), self.outline)
@@ -92,12 +92,12 @@ class KeyboardDraw(object):
 
     def _white_keys_in_range(self):
         whites = 0
-        for i in xrange(self._min_key, self._max_key + 1):
+        for i in range(self._min_key, self._max_key + 1):
             if not self._black_key(i):
                 whites += 1
         return whites
 
-class KeyHeatmap(object):
+class KeyHeatmap:
     """
     callable which can be used as colouring callback for KeyboardDraw;
     generates heatmap-like colours based on a dict mapping

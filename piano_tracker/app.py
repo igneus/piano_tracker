@@ -18,14 +18,16 @@ def main():
             IOThread(stats, terminate)
         ]
 
-        map(lambda x: x.start(), threads)
+        for x in threads:
+            x.start()
 
         while threading.active_count() > 0:
             time.sleep(0.1)
 
     except KeyboardInterrupt:
         terminate.set()
-        map(lambda x: x.join(), threads)
+        for x in threads:
+            x.join()
 
         final_stats = stats.final_stats()
         print

@@ -19,11 +19,11 @@ class SampledStats:
 
     def results(self):
         items = self.db.execute('SELECT * FROM samples')
-        intensity = map(self._intensity, items)
+        intensity = [self._intensity(i) for i in items]
 
-        while intensity[0] == 0 and intensity[1] == 0:
+        while len(intensity) > 2 and intensity[0] == 0 and intensity[1] == 0:
             intensity.pop(0)
-        while intensity[-1] == 0 and intensity[-2] == 0:
+        while len(intensity) > 2 and intensity[-1] == 0 and intensity[-2] == 0:
             intensity.pop()
 
         return {'intensity': intensity}

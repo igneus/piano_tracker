@@ -8,7 +8,7 @@ It can also depend on other metrics. Dependencies are autowired
 by MetricsProvider.
 """
 
-class Metric(object):
+class Metric:
     """ Abstract class """
 
     def value(self):
@@ -23,14 +23,14 @@ class Metric(object):
         """ processes incoming messages """
         pass
 
-class TimeFormatted(object):
+class TimeFormatted:
     """ Mixin. Implements time formatting """
 
     def format(self):
         idur = int(self.value())
         return '%02i:%02i' % (idur / 60, idur % 60)
 
-class FloatFormatted(object):
+class FloatFormatted:
     """ Mixin. Implements float formatting """
 
     def format(self):

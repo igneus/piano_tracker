@@ -3,7 +3,7 @@ import re
 
 from . import metrics
 
-class MetricsProvider(object):
+class MetricsProvider:
     """ Autowiring dependency injection container for metrics """
 
     def __init__(self, observable, module=metrics):

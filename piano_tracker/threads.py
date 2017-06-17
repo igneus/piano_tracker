@@ -9,7 +9,7 @@ class Base(threading.Thread):
     """ abstract class; functionality common to all app threads """
 
     def __init__(self, stats, terminate):
-        threading.Thread.__init__(self)
+        super().__init__()
 
         # Thead property modifying it's behaviour
         self.daemon = True
@@ -27,7 +27,7 @@ class DisplayThread(Base):
 
 class SamplingThread(Base):
     def __init__(self, stats, terminate, result_queue):
-        Base.__init__(self, stats, terminate)
+        super().__init__(stats, terminate)
         self._result_queue = result_queue
 
     def run(self):

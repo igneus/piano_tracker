@@ -3,7 +3,7 @@ import threading
 
 from .metrics_provider import MetricsProvider
 
-class Stats(object):
+class Stats:
     """ thread-safe message aggregator """
 
     def __init__(self):
@@ -21,7 +21,7 @@ class Stats(object):
             'notes_playing',
             'recent_notes',
         ]
-        self._metrics = map(lambda x: provider.provide(x), metrics)
+        self._metrics = [provider.provide(x) for x in metrics]
 
         final_metrics = [
             'total_duration',
@@ -32,7 +32,7 @@ class Stats(object):
             'notes_per_playing_minute',
             'note_count_per_pitch',
         ]
-        self._final_metrics = map(lambda x: provider.provide(x), final_metrics)
+        self._final_metrics = [provider.provide(x) for x in final_metrics]
 
     def add_listener(self, listener, message_types):
         """ registers a listener """
