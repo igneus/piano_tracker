@@ -10,6 +10,8 @@ def generate(stats, filename):
     draw = ImageDraw.Draw(image)
 
     keys = stats['keys'].keys()
+    if len(keys) == 0:
+        keys = [0]
     key_range = (min(keys), max(keys))
     heatmap = KeyHeatmap(stats['keys'])
     KeyboardDraw(key_range, size[0])(draw, heatmap)
@@ -85,6 +87,8 @@ class KeyHeatmap(object):
         self._key_stats = key_stats
 
         hit_values = self._key_stats.values()
+        if len(hit_values) == 0:
+            hit_values = [0]
         self._min_hits = min(hit_values)
         self._max_hits = max(hit_values)
         self._hit_range = self._max_hits - self._min_hits
