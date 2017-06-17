@@ -1,10 +1,11 @@
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFont
+from matplotlib.font_manager import FontManager, FontProperties
 
 def generate(stats, filename):
     """ generates graphic summarizing the recorded stats """
 
     size = (640, 480)
-    bgcolour = '#ccd'
+    bgcolour = '#dde'
     image = Image.new('RGB', size, bgcolour)
 
     draw = ImageDraw.Draw(image)
@@ -15,6 +16,15 @@ def generate(stats, filename):
     key_range = (min(keys), max(keys))
     heatmap = KeyHeatmap(stats['keys'])
     KeyboardDraw(key_range, size[0])(draw, heatmap)
+
+    font_size = 16
+    font_prop = FontProperties(('Open Sans', 'Liberation Sans', 'Arial', 'sans-serif'), size=font_size)
+    font_path = FontManager().findfont(font_prop)
+    font = ImageFont.truetype(font_path, font_size)
+
+    draw.text((30, 400), 'total time: %s' % stats['duration'], font=font, fill='#000')
+    draw.text((320, 400), 'playing time: %s' % stats['playing_duration'], font=font, fill='#000')
+    draw.text((30, 430), 'notes per minute: %s' % stats['nppm'], font=font, fill='#000')
 
     image.save(filename)
 
