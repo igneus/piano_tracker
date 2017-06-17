@@ -1,10 +1,10 @@
 import time
 import threading
 
-import graphic
-from stats import Stats
-from threads import DisplayThread, SamplingThread, IOThread
-from Queue import Queue
+from . import graphic
+from .stats import Stats
+from .threads import DisplayThread, SamplingThread, IOThread
+from queue import Queue
 
 def main():
     try:
@@ -29,7 +29,7 @@ def main():
 
         final_stats = stats.final_stats()
         print
-        print final_stats
+        print(final_stats)
 
         sampled_stats = hand_over_data.get()
 

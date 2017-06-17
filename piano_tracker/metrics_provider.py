@@ -1,7 +1,7 @@
 import inspect
 import re
 
-import metrics
+from . import metrics
 
 class MetricsProvider(object):
     """ Autowiring dependency injection container for metrics """

@@ -1,7 +1,7 @@
 import time
 import threading
 
-from metrics_provider import MetricsProvider
+from .metrics_provider import MetricsProvider
 
 class Stats(object):
     """ thread-safe message aggregator """

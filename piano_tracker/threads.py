@@ -3,7 +3,7 @@ import threading
 
 import mido
 
-from sampled_stats import SampledStats
+from .sampled_stats import SampledStats
 
 class Base(threading.Thread):
     """ abstract class; functionality common to all app threads """
@@ -22,7 +22,7 @@ class DisplayThread(Base):
 
     def run(self):
         while not self.terminate.is_set():
-            print self.stats.stats()
+            print(self.stats.stats())
             time.sleep(3)
 
 class SamplingThread(Base):

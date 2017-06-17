@@ -1,8 +1,6 @@
 import time
 from collections import deque
 
-import pinject
-
 """
 Each metric class subscribes to zero or more message types
 and exposes a method returning the metric value.
@@ -135,9 +133,8 @@ class DurationMinutes(Metric):
     name = 'minutes'
     subscribe_to = []
 
-    @pinject.copy_args_to_internal_fields
     def __init__(self, total_duration):
-        pass
+        self._total_duration = total_duration
 
     def value(self):
         return self._total_duration.value() / 60
@@ -146,9 +143,8 @@ class PlayingDurationMinutes(Metric):
     name = 'minutes'
     subscribe_to = []
 
-    @pinject.copy_args_to_internal_fields
     def __init__(self, playing_duration):
-        pass
+        self._playing_duration = playing_duration
 
     def value(self):
         return self._playing_duration.value() / 60
@@ -174,9 +170,9 @@ class NotesPerMinute(FloatFormatted, Metric):
     name = 'npm'
     subscribe_to = []
 
-    @pinject.copy_args_to_internal_fields
     def __init__(self, note_count, duration_minutes):
-        pass
+        self._note_count = note_count
+        self._duration_minutes = duration_minutes
 
     def value(self):
         if self._duration_minutes.value() == 0.0:
@@ -188,9 +184,9 @@ class NotesPerPlayingMinute(FloatFormatted, Metric):
     name = 'nppm'
     subscribe_to = []
 
-    @pinject.copy_args_to_internal_fields
     def __init__(self, note_count, playing_duration_minutes):
-        pass
+        self._note_count = note_count
+        self._playing_duration_minutes = playing_duration_minutes
 
     def value(self):
         if self._playing_duration_minutes.value() == 0.0:
