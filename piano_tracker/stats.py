@@ -18,6 +18,8 @@ class Stats(object):
             'note_count',
             'notes_per_minute',
             'notes_per_playing_minute',
+            'notes_playing',
+            'recent_notes',
         ]
         self._metrics = map(lambda x: provider.provide(x), metrics)
 

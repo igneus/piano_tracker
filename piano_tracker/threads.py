@@ -3,6 +3,8 @@ import threading
 
 import mido
 
+from sampled_stats import SampledStats
+
 class Base(threading.Thread):
     """ abstract class; functionality common to all app threads """
 
@@ -22,6 +24,19 @@ class DisplayThread(Base):
         while not self.terminate.is_set():
             print self.stats.stats()
             time.sleep(3)
+
+class SamplingThread(Base):
+    def __init__(self, stats, terminate, result_queue):
+        Base.__init__(self, stats, terminate)
+        self._result_queue = result_queue
+
+    def run(self):
+        sampled_stats = SampledStats()
+        while not self.terminate.is_set():
+            sampled_stats.push(self.stats.stats())
+            time.sleep(0.3)
+
+        self._result_queue.put(sampled_stats.results())
 
 class IOThread(Base):
     """ reads MIDI events, computes stats """

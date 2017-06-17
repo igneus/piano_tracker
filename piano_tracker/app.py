@@ -3,15 +3,18 @@ import threading
 
 import graphic
 from stats import Stats
-from threads import DisplayThread, IOThread
+from threads import DisplayThread, SamplingThread, IOThread
+from Queue import Queue
 
 def main():
     try:
         stats = Stats()
         terminate = threading.Event()
+        hand_over_data = Queue(maxsize=1)
 
         threads = [
             DisplayThread(stats, terminate),
+            SamplingThread(stats, terminate, hand_over_data),
             IOThread(stats, terminate)
         ]
 
@@ -28,4 +31,6 @@ def main():
         print
         print final_stats
 
-        graphic.generate(final_stats, 'piano_tracker_graphic.png')
+        sampled_stats = hand_over_data.get()
+
+        graphic.generate(final_stats, sampled_stats, 'piano_tracker_graphic.png')

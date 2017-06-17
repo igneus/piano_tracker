@@ -1,4 +1,5 @@
 import time
+from collections import deque
 
 import pinject
 
@@ -63,6 +64,25 @@ class TotalDuration(TimeFormatted, Metric):
             self._started_at = now
         elif message.type == 'note_off':
             self._ended_at = now
+
+class NotesPlaying(Metric):
+    """ How many notes are playing simultaneously """
+
+    name = "notes_playing"
+    subscribe_to = ['note_on', 'note_off']
+
+    def __init__(self):
+        self._notes_playing = 0
+
+    def push(self, message):
+        if message.type == 'note_on':
+            self._notes_playing += 1
+        elif message.type == 'note_off':
+            if self._notes_playing > 0:
+                self._notes_playing -= 1
+
+    def value(self):
+        return self._notes_playing
 
 class PlayingDuration(TimeFormatted, Metric):
     """ Time when some note was being played, in seconds, as float """
@@ -194,3 +214,27 @@ class NoteCountPerPitch(Metric):
 
     def value(self):
         return self._keys
+
+class RecentNotes(Metric):
+    name = 'recent_notes'
+    subscribe_to = ['note_on']
+
+    def __init__(self):
+        self._queue = deque()
+        self._max_age = 1 # seconds
+
+    def push(self, message):
+        now = time.time()
+
+        self._queue.append(now)
+        self._delete_old()
+
+    def value(self):
+        self._delete_old()
+        return len(self._queue)
+
+    def _delete_old(self):
+        now = time.time()
+
+        while len(self._queue) > 0 and self._queue[0] < (now - self._max_age):
+            self._queue.popleft()

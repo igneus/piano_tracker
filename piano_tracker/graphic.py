@@ -1,12 +1,13 @@
 from PIL import Image, ImageDraw, ImageFont
 from matplotlib.font_manager import FontManager, FontProperties
+import matplotlib.pyplot as plot
 
-def generate(stats, filename):
+def generate(stats, sampled_stats, filename):
     """ generates graphic summarizing the recorded stats """
 
     size = (640, 480)
-    bgcolour = '#dde'
-    image = Image.new('RGB', size, bgcolour)
+    bgcolour = '#ddddeeff'
+    image = Image.new('RGBA', size, bgcolour)
 
     draw = ImageDraw.Draw(image)
 
@@ -25,6 +26,16 @@ def generate(stats, filename):
     draw.text((30, 400), 'total time: %s' % stats['duration'], font=font, fill='#000')
     draw.text((320, 400), 'playing time: %s' % stats['playing_duration'], font=font, fill='#000')
     draw.text((30, 430), 'notes per minute: %s' % stats['nppm'], font=font, fill='#000')
+
+    intensity = sampled_stats['intensity']
+    figure = plot.figure(figsize=(size[0] / 100.0, 1.5), dpi=100)
+    plot.axis('off')
+    plot.plot(intensity)
+    graph_path = 'tmp.png'
+    figure.savefig(graph_path, transparent=True)
+
+    graph_img = Image.open(graph_path)
+    image.paste(graph_img, (0, 220), graph_img)
 
     image.save(filename)
 
