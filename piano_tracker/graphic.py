@@ -72,7 +72,7 @@ class KeyboardDraw(object):
         for key in xrange(self._min_key, self._max_key + 1):
             x = offset + i * w
             if self._black_key(key):
-                draw.rectangle([x - w/4, 0, x + w/4, h/2], colour_func(key, self.black), self.outline)
+                draw.rectangle([x - w/4, 0, x + w/4, h * 0.6], colour_func(key, self.black), self.outline)
             else:
                 i += 1
 
