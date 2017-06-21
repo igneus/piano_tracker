@@ -1,3 +1,4 @@
+import tempfile
 from PIL import Image, ImageDraw, ImageFont
 from matplotlib.font_manager import FontManager, FontProperties
 import matplotlib.pyplot as plot
@@ -31,10 +32,12 @@ def generate(stats, sampled_stats, filename):
     figure = plot.figure(figsize=(size[0] / 100.0, 1.5), dpi=100)
     plot.axis('off')
     plot.plot(intensity)
-    graph_path = 'tmp.png'
-    figure.savefig(graph_path, transparent=True)
 
-    graph_img = Image.open(graph_path)
+    with tempfile.NamedTemporaryFile(suffix='.png') as fp:
+        figure.savefig(fp.name, transparent=True)
+
+        graph_img = Image.open(fp.name)
+
     image.paste(graph_img, (0, 220), graph_img)
 
     image.save(filename)
