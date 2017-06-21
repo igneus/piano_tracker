@@ -62,6 +62,13 @@ class KeyboardDraw:
         if self._black_key(self._max_key):
             self._max_key += 1
 
+        # at least one octave should be drawn:
+        while (self._max_key - self._min_key) < 11:
+            if (self._min_key % 12) != 0:
+                self._min_key -= 1
+            else:
+                self._max_key += 1
+
         self._max_width = max_width
 
     def __call__(self, draw, colour_func=default_colour_func):
